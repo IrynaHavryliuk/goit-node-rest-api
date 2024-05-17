@@ -60,6 +60,7 @@ export const createContact = async (req, res, next) => {
     next(err);
   }
 };
+
 export const updateContact = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -75,5 +76,26 @@ export const updateContact = async (req, res, next) => {
     res.json(contact);
   } catch (err) {
     next(err);
+  }
+};
+
+export const updateStatusContact = async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const { favorite } = req.body;
+
+    const contact = await getContactById(contactId);
+
+    if (!contact) {
+      throw HttpError(404, "Contact not found");
+    }
+
+    contact.favorite = favorite;
+
+    const updatedContact = await changeContact(contactId, contact);
+
+    res.json(updatedContact);
+  } catch (error) {
+    next(error);
   }
 };
