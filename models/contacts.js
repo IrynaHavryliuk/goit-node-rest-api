@@ -7,11 +7,11 @@ const contactSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: false, // Set to true if the email is required
+        required: false, 
     },
     phone: {
-        type: String, // Storing phone as String to include characters like + or -
-        required: false, // Set to true if the phone is required
+        type: String, 
+        required: false, 
     },
     favorite: {
         type: Boolean,
