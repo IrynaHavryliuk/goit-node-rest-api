@@ -1,3 +1,5 @@
+// routes/contactsRouter.js
+
 import express from "express";
 import {
   getAllContacts,
@@ -5,7 +7,7 @@ import {
   deleteContact,
   createContact,
   updateContact,
-  updateStatusContact, // You will need to create this controller
+  updateStatusContact,
 } from "../controllers/contactsControllers.js";
 
 const contactsRouter = express.Router();
@@ -26,6 +28,20 @@ contactsRouter.post("/", createContact);
 contactsRouter.put("/:id", updateContact);
 
 // Update the favorite status of a specific contact by ID
-contactsRouter.patch("/:id/favorite", updateStatusContact);
+contactsRouter.patch("/:contactId/favorite", async (req, res) => {
+  const { contactId } = req.params;
+  const { favorite } = req.body;
+
+  try {
+    // Call updateStatusContact function with contactId and favorite
+    const updatedContact = await updateStatusContact(contactId, { favorite });
+    
+    // If update is successful, return the updated contact
+    res.status(200).json(updatedContact);
+  } catch (error) {
+    // If contact is not found, return 404 status with message
+    res.status(404).json({ message: "Not found" });
+  }
+});
 
 export default contactsRouter;
