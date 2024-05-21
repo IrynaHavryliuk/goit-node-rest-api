@@ -13,8 +13,16 @@ import {
 
 export const getAllContacts = async (req, res, next) => {
   try {
-    const contact = await listContacts();
-    res.json(contact);
+    const { page = 1, limit = 20, favorite } = req.query;
+    const skip = (page - 1) * limit;
+
+    const query = { owner: req.user._id };
+    if (favorite) {
+      query.favorite = favorite === 'true';
+    }
+
+    const contacts = await Contact.find(query).skip(skip).limit(Number(limit));
+    res.json(contacts);
   } catch (err) {
     next(err);
   }
