@@ -10,6 +10,7 @@ import {
   createContactSchema,
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
+import Contact from '../models/contacts.js';
 
 export const getAllContacts = async (req, res, next) => {
   try {
@@ -31,7 +32,7 @@ export const getAllContacts = async (req, res, next) => {
 export const getOneContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const contact = await getContactById(id);
+    const contact = await Contact.findOne({ _id: id, owner: req.user._id });
     if (!contact) {
       throw HttpError(404, "Contact not found");
     }
@@ -44,7 +45,7 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const contact = await removeContact(id);
+    const contact = await Contact.findOneAndDelete({ _id: id, owner: req.user._id });
     if (!contact) {
       throw HttpError(404, "Contact not found");
     }
@@ -56,29 +57,31 @@ export const deleteContact = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { name, email, phone } = req.body;
     const validate = await createContactSchema.validateAsync(req.body);
     if (validate.error) {
       throw HttpError(400, { message: validate.error.message });
     }
-    const contact = await addContact({ id, name, email, phone });
+    const contact = await addContact({ ...req.body, owner: req.user._id });
     res.status(201).json(contact);
   } catch (err) {
     next(err);
   }
 };
+
 export const updateContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, email, phone } = req.body;
     const validate = await updateContactSchema.validateAsync(req.body);
     if (validate.error) {
       throw HttpError(400, { message: validate.error.message });
     }
-    const contact = await changeContact(id, { name, email, phone });
+    const contact = await Contact.findOneAndUpdate(
+      { _id: id, owner: req.user._id },
+      req.body,
+      { new: true }
+    );
     if (!contact) {
-      throw HttpError(404, "id not found");
+      throw HttpError(404, "Contact not found");
     }
     res.json(contact);
   } catch (err) {
