@@ -5,7 +5,7 @@ import shortid from "shortid";
 const contactsPath = path.resolve("db", "contacts.json");
 
 async function writeContact(contacts) {
-  fs.writeFile(contactsPath, JSON.stringify(contacts, undefined, 2));
+  await fs.writeFile(contactsPath, JSON.stringify(contacts, undefined, 2));
 }
 
 export async function listContacts() {
@@ -13,23 +13,19 @@ export async function listContacts() {
     const data = await fs.readFile(contactsPath, "utf-8");
     return JSON.parse(data);
   } catch (err) {
-    return err;
+    console.error("Error reading contacts:", err.message);
+    throw err;
   }
 }
 
 export async function getContactById(contactId) {
   try {
     const contacts = await listContacts();
-
     const data = contacts.find((contact) => contact.id === contactId);
-
-    if (!data) {
-      return null;
-    }
-
-    return data;
+    return data || null;
   } catch (err) {
-    return err;
+    console.error(`Error getting contact with id ${contactId}:`, err.message);
+    throw err;
   }
 }
 
@@ -43,14 +39,13 @@ export async function removeContact(contactId) {
     }
 
     const removedContact = contacts[index];
-
     contacts.splice(index, 1);
-
     await writeContact(contacts);
 
     return removedContact;
   } catch (err) {
-    return err;
+    console.error(`Error removing contact with id ${contactId}:`, err.message);
+    throw err;
   }
 }
 
@@ -64,7 +59,8 @@ export async function addContact(contact) {
 
     return newContact;
   } catch (err) {
-    return err;
+    console.error("Error adding new contact:", err.message);
+    throw err;
   }
 }
 
@@ -80,6 +76,7 @@ export async function changeContact(contactId, updated) {
     await writeContact(contacts);
     return updatedContact;
   } catch (err) {
-    return err;
+    console.error(`Error updating contact with id ${contactId}:`, err.message);
+    throw err;
   }
 }
