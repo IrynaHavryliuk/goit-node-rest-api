@@ -10,7 +10,6 @@ import {
   createContactSchema,
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
-import Contact from '../models/contacts.js';
 
 export const getAllContacts = async (req, res, next) => {
   try {
@@ -88,3 +87,25 @@ export const updateContact = async (req, res, next) => {
     next(err);
   }
 };
+export const updateStatusContact = async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const { favorite } = req.body;
+
+    const updatedContact = await Contact.findOneAndUpdate(
+      { _id: contactId, owner: req.user._id },
+      { favorite },
+      { new: true }
+    );
+
+    if (!updatedContact) {
+      throw HttpError(404, "Contact not found");
+    }
+
+    res.status(200).json(updatedContact);
+  } catch (error) {
+    next(error);
+  }
+};
+
+ 

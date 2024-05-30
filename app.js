@@ -3,8 +3,9 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
+import path from "path";
+import { fileURLToPath } from 'url';
 import contactsRouter from "./routes/contactsRouter.js";
-import authRouter from './routes/authRoutes.js';
 
 // Перевірка наявності змінної оточення для підключення до бази даних
 const DB_URI = process.env.DB_URI;
@@ -33,23 +34,18 @@ app.use(cors());
 // Middleware для парсингу JSON вхідних запитів
 app.use(express.json());
 
-// Маршрути для роботи з контактами
-app.use('/api/contacts', contactsRouter);
-// Маршрути для аутентифікації
-app.use('/api/users', authRouter);
+app.use("/api/contacts", contactsRouter);
 
-// Обробка запитів на неіснуючі маршрути
 app.use((_, res) => {
-  res.status(404).json({ message: 'Route not found' });
+    res.status(404).json({ message: "Route not found" });
 });
 
 // Обробка помилок
 app.use((err, req, res, next) => {
-  const { status = 500, message = 'Server error' } = err;
-  res.status(status).json({ message });
+    const { status = 500, message = "Server error" } = err;
+    res.status(status).json({ message });
 });
 
-// Запуск сервера
 app.listen(3000, () => {
-  console.log('Server is running. Use our API on port: 3000');
+    console.log("Server is running. Use our API on port: 3000");
 });
