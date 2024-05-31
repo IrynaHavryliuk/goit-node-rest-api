@@ -8,11 +8,10 @@ import {
   updateStatusContact, 
 } from "../controllers/contactsControllers.js";
 import authMiddleware from '../middlewares/authMiddleware.js';
-import checkOwnerMiddleware from '../middlewares/checkOwnerMiddleware.js';  // Додайте ваш middleware для перевірки власника
 
 const contactsRouter = express.Router();
 
-contactsRouter.use(authMiddleware); // Додаємо authMiddleware для всіх маршрутів
+contactsRouter.use(authMiddleware);
 
 contactsRouter.get("/", getAllContacts);
 

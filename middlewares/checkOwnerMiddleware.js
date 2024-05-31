@@ -11,7 +11,7 @@ const checkOwnerMiddleware = async (req, res, next) => {
       return next(HttpError(404, 'Contact not found or you do not have permission'));
     }
 
-    req.contact = contact; // Зберігаємо контакт для подальшого використання
+    req.contact = contact; 
     next();
   } catch (error) {
     next(HttpError(404, 'Contact not found or you do not have permission'));

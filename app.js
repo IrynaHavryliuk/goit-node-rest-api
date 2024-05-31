@@ -3,9 +3,9 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
-import path from "path";
-import { fileURLToPath } from 'url';
 import contactsRouter from "./routes/contactsRouter.js";
+import authRouter from "./routes/authRoutes.js";
+import registerRouter from "./routes/registerRouter.js"; 
 
 // Перевірка наявності змінної оточення для підключення до бази даних
 const DB_URI = process.env.DB_URI;
@@ -17,7 +17,7 @@ if (!DB_URI) {
 // Підключення до MongoDB з використанням async/await
 (async () => {
   try {
-    await mongoose.connect(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(DB_URI);
     console.log("Database connection successful. Connected to MongoDB.");
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error);
@@ -35,7 +35,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/contacts", contactsRouter);
-
+app.use("/api/auth", authRouter);
+app.use("/users", registerRouter); 
 app.use((_, res) => {
     res.status(404).json({ message: "Route not found" });
 });

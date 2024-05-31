@@ -44,7 +44,7 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const contact = await Contact.findOneAndDelete({ _id: id, owner: req.user._id });
+    const contact = await contact.findOneAndDelete({ _id: id, owner: req.user._id });
     if (!contact) {
       throw HttpError(404, "Contact not found");
     }
